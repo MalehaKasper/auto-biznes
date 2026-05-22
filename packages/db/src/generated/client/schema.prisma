@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  SHADOW
+  REGISTERED
+}
+
+enum ServiceType {
+  STO
+  TIRE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum OwnerType {
+  CLIENT
+  COMPANY
+}
+
+model User {
+  id           String     @id @default(uuid())
+  phone        String     @unique
+  name         String?
+  email        String?    @unique
+  status       UserStatus @default(SHADOW)
+  passwordHash String?
+
+  vehicles       UserVehicle[]
+  bookings       Booking[]
+  serviceRecords ServiceRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Vehicle {
+  id    String  @id @default(uuid())
+  plate String?
+  vin   String? @unique
+  make  String?
+  model String?
+  year  Int?
+  color String?
+
+  owners         UserVehicle[]
+  bookings       Booking[]
+  serviceRecords ServiceRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("vehicles")
+}
+
+model UserVehicle {
+  id        String  @id @default(uuid())
+  userId    String
+  vehicleId String
+  isHidden  Boolean @default(false)
+
+  user    User    @relation(fields: [userId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+
+  ownedSince DateTime  @default(now())
+  ownedUntil DateTime?
+
+  @@unique([userId, vehicleId])
+  @@map("user_vehicles")
+}
+
+model Booking {
+  id          String        @id @default(uuid())
+  userId      String
+  vehicleId   String
+  serviceType ServiceType
+  status      BookingStatus @default(PENDING)
+  scheduledAt DateTime?
+  notes       String?
+
+  user           User            @relation(fields: [userId], references: [id])
+  vehicle        Vehicle         @relation(fields: [vehicleId], references: [id])
+  serviceRecords ServiceRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bookings")
+}
+
+model ServiceRecord {
+  id          String    @id @default(uuid())
+  vehicleId   String
+  bookingId   String?
+  ownerUserId String?
+  ownerType   OwnerType @default(CLIENT)
+  serviceType String
+  description String
+  mileage     Int?
+  cost        Decimal?  @db.Decimal(10, 2)
+  performedAt DateTime
+
+  vehicle Vehicle  @relation(fields: [vehicleId], references: [id])
+  booking Booking? @relation(fields: [bookingId], references: [id])
+  owner   User?    @relation(fields: [ownerUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("service_records")
+}
+
+model OtpCode {
+  id        String    @id @default(uuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+  @@map("otp_codes")
+}
