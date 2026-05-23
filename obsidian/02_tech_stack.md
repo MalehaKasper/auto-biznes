@@ -30,16 +30,31 @@
 
 ## Зафіксований стек
 
+### Сайт (Turborepo монорепо)
 | Шар | Технологія |
 |-----|-----------|
 | Монорепо | Turborepo + `@auto/types` (shared) |
-| Сайт (Фасад) | Next.js 15 (App Router) + TypeScript |
-| CRM | Refine.dev + Next.js + TypeScript |
+| Frontend | Next.js 15 (App Router) + TypeScript |
 | Backend API | NestJS + TypeScript |
 | ORM | Prisma |
-| База даних | PostgreSQL |
+| Міграції | Prisma Migrate (тільки site-таблиці, без `crm_` префіксу) |
+| Сховище фото | Cloudflare R2 (S3-сумісний) |
 | Черги / Кеш | Redis + BullMQ |
-| Auth | Кастомний Phone OTP (NestJS) |
+| Auth (сайт) | Кастомний Phone OTP (NestJS) |
 | SMS-шлюз | Turbosms / SMS-Fly (UA) |
+
+### CRM (окремий проєкт `~/Documents/auto-crm/`)
+| Шар | Технологія |
+|-----|-----------|
+| Backend | FastAPI (Python) + SQLAlchemy |
+| Міграції | Alembic (тільки `crm_*` таблиці) |
+| Frontend | Vite + React + TypeScript |
+| Стан / Запити | TanStack Query |
+| Auth (CRM) | Email + Password (JWT, акаунти створює адмін) |
+
+### Спільна інфраструктура
+| Шар | Технологія |
+|-----|-----------|
+| База даних | PostgreSQL (спільна для сайту і CRM) |
 | QA Bot (Фаза 5) | Playwright + k6 + nuclei |
 | Деплой | Окремий сервер (налаштовуємо пізніше) |

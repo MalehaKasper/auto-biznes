@@ -57,9 +57,10 @@ model Vehicle {
   year  Int?
   color String?
 
-  owners         UserVehicle[]
-  bookings       Booking[]
-  serviceRecords ServiceRecord[]
+  owners          UserVehicle[]
+  bookings        Booking[]
+  serviceRecords  ServiceRecord[]
+  catalogListings CatalogListing[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -134,4 +135,78 @@ model OtpCode {
 
   @@index([phone])
   @@map("otp_codes")
+}
+
+enum CatalogListingType {
+  SALE
+  WANTED
+}
+
+enum CatalogListingStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  CLOSED
+}
+
+enum CatalogInquiryType {
+  BUY
+  EXCHANGE
+  QUESTION
+  CALLBACK
+  EVALUATE
+}
+
+enum CatalogInquiryStatus {
+  NEW
+  IN_PROGRESS
+  CLOSED
+}
+
+model CatalogListing {
+  id             String               @id @default(uuid())
+  type           CatalogListingType
+  make           String
+  model          String
+  year           Int
+  yearMax        Int?
+  mileage        Int?
+  mileageMax     Int?
+  price          Decimal?             @db.Decimal(12, 2)
+  bargainEnabled Boolean              @default(true)
+  description    String
+  photos         String[]
+  status         CatalogListingStatus @default(AVAILABLE)
+
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+
+  inquiries CatalogInquiry[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("catalog_listings")
+}
+
+model CatalogInquiry {
+  id        String               @id @default(uuid())
+  type      CatalogInquiryType
+  status    CatalogInquiryStatus @default(NEW)
+  phone     String
+  name      String
+  message   String?
+  offeredPrice       Decimal? @db.Decimal(12, 2)
+  tradeVehicleMake   String?
+  tradeVehicleModel  String?
+  tradeVehicleYear   Int?
+  tradeVehicleMileage Int?
+  tradeVehiclePlate  String?
+
+  listingId String?
+  listing   CatalogListing? @relation(fields: [listingId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("catalog_inquiries")
 }
