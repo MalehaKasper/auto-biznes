@@ -1,6 +1,6 @@
 # CRM — Архітектура та Фазування
 
-> Статус: `✅ ФАЗА 2 ЗАВЕРШЕНА` — всі підфази реалізовані (2.1 / 2.2 / 2.3)
+> Статус: `✅ ФАЗА 3 ЗАВЕРШЕНА` — всі підфази реалізовані (3.1 / 3.2 / 3.3 / 3.4)
 
 ---
 
@@ -122,12 +122,85 @@
 - Реалізовано через `GET /auth/me` → `useMe()` hook → фільтрація `navSections` у `Layout.tsx`
 - Roles page оновлено з новими групами permissions: Каталог авто, Звіти, Нотатки клієнтів
 
-### Pending (ручні дії)
+### Pending (ручні дії для Фази 2.3 + 3.2)
 ```bash
 # Виконати в ~/Documents/auto-crm/backend/:
-alembic revision --autogenerate -m "phase_2_3_client_notes"
 alembic upgrade head
+# Застосує: phase_2_3_client_notes (якщо ще не виконано) + b4c7e9f12a38_phase_3_source_booking_id
 ```
+
+---
+
+## Фаза 3 — Інтеграція Сайту з CRM `✅ Завершено 2026-05-23`
+
+### Підфаза 3.1 — Критичні баги та базовий UX сайту
+
+**Site (NestJS / Next.js):**
+- `/book` — date picker + time slot picker (GET /bookings/slots), `?serviceType=`, `?vehicleId=` params
+- `/book/[id]` — публічна сторінка статусу запису (без auth), status badges укр. мовою
+- `/garage/add` — форма додавання авто (auth guard, client validation)
+- `/garage/[vehicleId]` — кнопка "Записати на сервіс" → `/book?vehicleId={id}`
+- `services/sto` і `services/tire` — повна версія з цінами, тривалістю, FAQ, CTA
+- `Footer.tsx` — контакти, адреса, графік Пн–Сб 08:00–18:00, посилання
+
+### Підфаза 3.2 — Booking → CRM інтеграція
+
+**NestJS нові ендпоінти:**
+- `PATCH /internal/bookings/:id/status` — зміна статусу з валідацією переходів + SMS
+  - Валідні переходи: `PENDING→CONFIRMED`, `PENDING→CANCELLED`, `CONFIRMED→IN_PROGRESS`, `CONFIRMED→CANCELLED`, `IN_PROGRESS→COMPLETED`, `IN_PROGRESS→CANCELLED`
+  - При `CONFIRMED` → надсилає `sendBookingConfirmed` SMS
+  - При `CANCELLED` → надсилає `sendBookingCancelled` SMS
+- `POST /internal/sms` — raw SMS через template+params (templates: `booking_confirmation`, `booking_confirmed`, `booking_cancelled`)
+
+**SQLAlchemy readonly моделі (SiteBase):**
+- `SiteVehicle` (table: `vehicles`)
+- `SiteBooking` (table: `bookings`) з FK на user і vehicle
+
+**Alembic міграція:**
+- `b4c7e9f12a38`: додає `source_booking_id VARCHAR(36) NULL` до `crm_work_orders`
+
+**CRM роутер `incoming_bookings.py`:**
+- `GET /incoming-bookings?status=` — список bookings з JOIN vehicles/users
+- `PATCH /incoming-bookings/{id}/confirm` — → NestJS PATCH internal (httpx, 3 retry, exponential backoff)
+- `PATCH /incoming-bookings/{id}/cancel` — → NestJS PATCH internal
+- `POST /incoming-bookings/{id}/convert` — Shadow User, `crm_client_profile`, `crm_work_order(source_booking_id)`, 409 якщо вже конвертовано
+
+**CRM React frontend:**
+- `src/api/incoming_bookings.ts` — хуки: `useIncomingBookings`, `useConfirmBooking`, `useCancelBooking`, `useConvertToWorkOrder`
+- `src/pages/IncomingBookings/index.tsx` — таблиця з табами статусів, діалог скасування, кнопки дій
+- Sidebar "Вхідні заявки" в секції "Сервіс" (без permission gate — доступно всім з `workorders:create`)
+- Route `/incoming-bookings` в `router.tsx`
+
+### Підфаза 3.3 — WorkOrder → Гараж writeback
+
+**NestJS:**
+- `POST /internal/service-records` — validates vehicleId (422), creates `ServiceRecord` via Prisma, links bookingId, returns `201 { id }`
+
+**CRM:**
+- При переході WorkOrder `IN_PROGRESS → READY_FOR_PAYMENT` + `source_booking_id` встановлено → CRM викликає `/internal/service-records` через httpx (3 retry)
+- Якщо виклик неуспішний → статус зберігається, але в response додається `{ warning: "service_record_write_failed" }`
+- WorkOrder Detail UI показує dismissible amber banner при `warning`
+
+### Підфаза 3.4 — Каталог та Профіль клієнта
+
+**NestJS Catalog filters:**
+- `getCatalogSchema` розширено: `make`, `priceMin`, `priceMax`, `yearMin`, `yearMax`
+- `CatalogService.getListings()` — Prisma WHERE з contains (insensitive) та range фільтрами
+
+**Site Catalog UI:**
+- Filter panel: make (text, debounce 300ms), price range, year range
+- URL params sync: `useSearchParams` + `router.push` (shareable URLs)
+- "Скинути фільтри" button; wrapped in `Suspense`
+
+**NestJS Auth Profile:**
+- `GET /auth/profile` (JWT) — повертає `{ phone, name, email, bookings[] }` (bookings desc)
+- `PATCH /auth/profile` — вже існував, залишено без змін
+
+**Site /profile:**
+- Auth guard → redirect `/login?redirect=/profile`
+- Phone (read-only), editable name/email, save button з feedback
+- Список усіх bookings: service type, дата, status badge, link до `/book/{id}`
+- Header показує "Профіль" лише якщо `getAccessToken()` повертає значення
 
 ---
 
@@ -137,16 +210,21 @@ alembic upgrade head
 Site (Next.js / NestJS)               CRM (FastAPI / React)
 ─────────────────────────             ─────────────────────
 users                ←── читає ──→   crm_client_profiles (shadow user link)
-catalog_listings     ←── пише  ──→   Фаза 2.3: CatalogModule (CRUD + статуси)
-catalog_inquiries    ←── читає ──→   Фаза 2.3: InquiriesModule
-/internal/storage/*  ←── internal→   Фаза 2.3: presigned URL relay (X-Internal-Key)
+catalog_listings     ←── пише  ──→   CatalogModule (CRUD + статуси)
+catalog_inquiries    ←── читає ──→   InquiriesModule
+/internal/storage/*  ←── internal→   presigned URL relay (X-Internal-Key)
+/internal/bookings/  ←── internal→   Фаза 3.2: confirm/cancel booking status
+/internal/sms        ←── internal→   Фаза 3.2: SMS шаблони через queue
+/internal/service-records ←─ inter→  Фаза 3.3: writeback до Garage
+bookings table       ←── читає ──→   Фаза 3.2: SiteBooking SQLAlchemy model
+vehicles table       ←── читає ──→   Фаза 3.2: SiteVehicle SQLAlchemy model
 ```
 
 ---
 
 ## Відкладені питання (для майбутніх дискусій)
-- Спосіб розгортання CRM (Railway? VPS? окремий Docker?)
+- Спосіб розгортання (Railway? VPS? окремий Docker?)
 - Real-time нотифікації в CRM (WebSocket чи polling?)
-- Інтеграція SMS-нотифікацій при зміні статусу WorkOrder (Фаза 3)
 - Мобільна версія CRM (PWA чи нативний застосунок?)
 - Дропнути колонку `notes` з `crm_client_profiles` (після підтвердження стабільності міграції)
+- Фаза 4 — відкоригування CRM на основі реальних даних та user feedback

@@ -104,5 +104,10 @@ export const getCatalogSchema = z.object({
   type: z.enum(["sale", "wanted"]).optional(),
   cursor: z.string().uuid().optional(),
   limit: z.coerce.number().int().min(1).max(50).default(12),
+  make: z.string().max(100).optional(),
+  priceMin: z.coerce.number().nonnegative().optional(),
+  priceMax: z.coerce.number().nonnegative().optional(),
+  yearMin: z.coerce.number().int().min(1900).max(2100).optional(),
+  yearMax: z.coerce.number().int().min(1900).max(2100).optional(),
 });
 export type GetCatalogDto = z.infer<typeof getCatalogSchema>;
