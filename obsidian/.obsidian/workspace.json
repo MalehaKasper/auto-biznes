@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "architecture_decisions/index.md",
+                "file": "crm_phases.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "crm_phases"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "architecture_decisions/index.md",
+                "file": "crm_phases.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Зворотні посилання для index"
+              "title": "Зворотні посилання для crm_phases"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "architecture_decisions/index.md",
+                "file": "crm_phases.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Вихідні посилання з index"
+              "title": "Вихідні посилання з crm_phases"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "architecture_decisions/index.md",
+                "file": "crm_phases.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Вміст index"
+              "title": "Вміст crm_phases"
             }
           }
         ]
@@ -185,14 +185,16 @@
   },
   "active": "2b6135a371cac04a",
   "lastOpenFiles": [
-    "00_index.md",
     "01_project_overview.md",
-    "02_tech_stack.md",
-    "deferred_qa_tasks.md",
+    "crm_phases.md",
+    "crm_phases.md.tmp.9448.d35223e39faa",
     "deferred_crm_tasks.md",
+    "deferred_qa_tasks.md",
+    "00_index.md",
+    "architecture_decisions/index.md",
     "backlog.md",
-    "architecture_decisions/ADR-000_template.md",
+    "02_tech_stack.md",
     "architecture_decisions/ADR-001_tech_stack.md",
-    "architecture_decisions/index.md"
+    "architecture_decisions/ADR-000_template.md"
   ]
 }
