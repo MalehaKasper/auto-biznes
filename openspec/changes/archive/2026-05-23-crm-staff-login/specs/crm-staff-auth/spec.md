@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Staff user login
 CRM staff SHALL authenticate via login (username) and bcrypt-hashed password. On success the system SHALL issue a signed JWT (access token, 8h expiry) and a refresh token (30d expiry, stored in an HttpOnly cookie). If the authenticated user has `is_sysadmin = true` and no `key` was provided, the system SHALL return HTTP 401 with `detail: "sysadmin_key_required"` instead of issuing tokens. If `is_sysadmin = true` and `key` is provided, it MUST match the `SYSADMIN_KEY` environment variable using constant-time comparison; mismatch returns HTTP 401.
@@ -29,7 +29,7 @@ CRM staff SHALL authenticate via login (username) and bcrypt-hashed password. On
 
 #### Scenario: Logout
 - **WHEN** a staff user calls `POST /auth/logout`
-- **THEN** the refresh token cookie is cleared and the token is invalidated server-side
+- **THEN** the refresh token cookie is cleared
 
 ### Requirement: Admin-managed staff accounts
 Staff accounts SHALL be created only by users with `settings:write` permission using a `login` username (not email). Self-registration is not allowed. A newly created account receives a temporary password that MUST be changed on first login.
@@ -50,24 +50,7 @@ Staff accounts SHALL be created only by users with `settings:write` permission u
 - **WHEN** a staff user with `must_change_password = true` successfully authenticates
 - **THEN** the returned JWT payload contains `password_change_required: true` and the frontend redirects to the change-password page
 
-### Requirement: RBAC via admin-configured roles
-The system SHALL enforce permissions via role-based access control. Each `crm_staff_user` has one `crm_role`. Each `crm_role` has a set of `crm_role_permissions` (permission strings). Every protected endpoint SHALL declare the required permission string and verify it against the authenticated user's role.
-
-#### Scenario: Permitted action
-- **WHEN** a staff user with permission `workorders:create` calls `POST /work-orders`
-- **THEN** the request is processed normally
-
-#### Scenario: Forbidden action
-- **WHEN** a staff user without permission `cash:open_session` calls `POST /cash-sessions`
-- **THEN** the system returns HTTP 403
-
-#### Scenario: Admin configures a new role
-- **WHEN** an admin POSTs to `POST /roles` with a name and a list of permission strings
-- **THEN** a new `crm_role` and its `crm_role_permissions` records are created
-
-#### Scenario: Admin assigns a role to a staff user
-- **WHEN** an admin PATCHes `/staff-users/{id}` with a new `role_id`
-- **THEN** the staff user's permissions change immediately on the next authenticated request
+## MODIFIED Requirements
 
 ### Requirement: Admin bootstrap
 The system SHALL provide a CLI seed command to create the first sysadmin user when no staff users exist. The created user SHALL have `is_sysadmin = true`.
