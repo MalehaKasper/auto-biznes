@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Patch,
   Body,
@@ -89,6 +90,12 @@ export class AuthController {
   async logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie("refresh_token");
     return { success: true };
+  }
+
+  @Get("profile")
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUser() user: JwtPayload) {
+    return this.authService.getProfile(user.sub);
   }
 
   @Patch("profile")

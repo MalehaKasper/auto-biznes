@@ -3,6 +3,7 @@ import { BullModule } from "@nestjs/bullmq";
 import { SmsQueue } from "./sms.queue";
 import { SmsProcessor } from "./sms.processor";
 import { SmsService } from "./sms.service";
+import { InternalSmsController } from "./internal-sms.controller";
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { SmsService } from "./sms.service";
     }),
   ],
   providers: [SmsQueue, SmsProcessor, SmsService],
+  controllers: [InternalSmsController],
   exports: [SmsQueue],
 })
 export class SmsModule {}

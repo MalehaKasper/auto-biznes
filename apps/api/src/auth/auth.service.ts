@@ -112,6 +112,28 @@ export class AuthService {
     });
   }
 
+  async getProfile(userId: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: {
+        phone: true,
+        name: true,
+        email: true,
+        bookings: {
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            serviceType: true,
+            status: true,
+            scheduledAt: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+    return user;
+  }
+
   async upsertUser(phone: string) {
     return this.prisma.user.upsert({
       where: { phone },

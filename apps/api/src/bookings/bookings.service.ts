@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { AuthService } from "../auth/auth.service";
 import { SmsQueue } from "../sms/sms.queue";
@@ -124,5 +124,43 @@ export class BookingsService {
     }
 
     return slots;
+  }
+
+  private static VALID_TRANSITIONS: Record<string, string[]> = {
+    PENDING: ["CONFIRMED", "CANCELLED"],
+    CONFIRMED: ["IN_PROGRESS", "CANCELLED"],
+    IN_PROGRESS: ["COMPLETED", "CANCELLED"],
+    COMPLETED: [],
+    CANCELLED: [],
+  };
+
+  async updateStatus(id: string, status: string, notes?: string) {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+      include: { user: { select: { phone: true } } },
+    });
+
+    if (!booking) throw new NotFoundException(`Booking ${id} not found`);
+
+    const allowed = BookingsService.VALID_TRANSITIONS[booking.status] ?? [];
+    if (!allowed.includes(status)) {
+      throw new BadRequestException(
+        `Invalid status transition: ${booking.status} → ${status}`
+      );
+    }
+
+    const updated = await this.prisma.booking.update({
+      where: { id },
+      data: { status: status as any, notes: notes ?? booking.notes },
+    });
+
+    const phone = booking.user.phone;
+    if (status === "CONFIRMED" && booking.scheduledAt) {
+      await this.smsQueue.sendBookingConfirmed(phone, id, booking.scheduledAt);
+    } else if (status === "CANCELLED") {
+      await this.smsQueue.sendBookingCancelled(phone, notes);
+    }
+
+    return { id: updated.id, status: updated.status };
   }
 }

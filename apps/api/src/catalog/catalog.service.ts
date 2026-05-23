@@ -12,11 +12,24 @@ export class CatalogService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getListings(query: GetCatalogDto) {
-    const { type, cursor, limit } = query;
+    const { type, cursor, limit, make, priceMin, priceMax, yearMin, yearMax } = query;
 
     const where: Record<string, unknown> = { status: "AVAILABLE" };
     if (type === "sale") where["type"] = "SALE";
     else if (type === "wanted") where["type"] = "WANTED";
+    if (make) where["make"] = { contains: make, mode: "insensitive" };
+    if (priceMin !== undefined || priceMax !== undefined) {
+      where["price"] = {
+        ...(priceMin !== undefined ? { gte: priceMin } : {}),
+        ...(priceMax !== undefined ? { lte: priceMax } : {}),
+      };
+    }
+    if (yearMin !== undefined || yearMax !== undefined) {
+      where["year"] = {
+        ...(yearMin !== undefined ? { gte: yearMin } : {}),
+        ...(yearMax !== undefined ? { lte: yearMax } : {}),
+      };
+    }
 
     const listings = await this.prisma.catalogListing.findMany({
       where,
