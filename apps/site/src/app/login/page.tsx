@@ -6,6 +6,9 @@ import { api, setAccessToken } from "../../lib/api";
 
 type Step = "phone" | "otp" | "profile";
 
+const inputClass = "w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 px-4 py-3 text-sm focus:outline-none focus:border-accent transition-colors";
+const labelClass = "block text-sm text-zinc-400 mb-1 font-body normal-case";
+
 export default function LoginPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("phone");
@@ -75,8 +78,8 @@ export default function LoginPage() {
     <div className="max-w-sm mx-auto px-4 py-16">
       {step === "phone" && (
         <>
-          <h1 className="text-2xl font-bold mb-1">Увійти</h1>
-          <p className="text-slate-500 text-sm mb-8">Введіть номер телефону — надішлемо код</p>
+          <h1 className="font-heading text-2xl text-zinc-100 mb-1">Увійти</h1>
+          <p className="text-zinc-400 text-sm mb-8 font-body normal-case">Введіть номер телефону — надішлемо код</p>
           <form onSubmit={handlePhoneSubmit} className="space-y-4">
             <input
               type="tel"
@@ -84,13 +87,13 @@ export default function LoginPage() {
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+380991234567"
               required
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500"
+              className={inputClass}
             />
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p className="text-red-400 text-sm">{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-700 text-white font-semibold py-3 rounded-xl hover:bg-blue-800 disabled:opacity-50 transition-colors"
+              className="w-full bg-accent text-zinc-950 font-heading text-sm uppercase tracking-wider py-3 hover:bg-accent-hover transition-colors disabled:opacity-50"
             >
               {loading ? "Надсилаємо..." : "Отримати код"}
             </button>
@@ -100,9 +103,9 @@ export default function LoginPage() {
 
       {step === "otp" && (
         <>
-          <h1 className="text-2xl font-bold mb-1">Введіть код</h1>
-          <p className="text-slate-500 text-sm mb-8">
-            Надіслали 6-значний код на <strong>{phone}</strong>
+          <h1 className="font-heading text-2xl text-zinc-100 mb-1">Введіть код</h1>
+          <p className="text-zinc-400 text-sm mb-8 font-body normal-case">
+            Надіслали 6-значний код на <strong className="text-zinc-200">{phone}</strong>
           </p>
           <form onSubmit={handleOtpSubmit} className="space-y-4">
             <input
@@ -112,26 +115,26 @@ export default function LoginPage() {
               placeholder="123456"
               maxLength={6}
               required
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 text-center text-2xl tracking-widest font-mono focus:outline-none focus:border-blue-500"
+              className="w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 px-4 py-3 text-center text-2xl tracking-widest font-mono focus:outline-none focus:border-accent transition-colors"
             />
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p className="text-red-400 text-sm">{error}</p>}
             <button
               type="submit"
               disabled={loading || otp.length < 6}
-              className="w-full bg-blue-700 text-white font-semibold py-3 rounded-xl hover:bg-blue-800 disabled:opacity-50 transition-colors"
+              className="w-full bg-accent text-zinc-950 font-heading text-sm uppercase tracking-wider py-3 hover:bg-accent-hover transition-colors disabled:opacity-50"
             >
               {loading ? "Перевіряємо..." : "Підтвердити"}
             </button>
             <button
               type="button"
               onClick={() => setStep("phone")}
-              className="w-full text-slate-500 text-sm hover:text-slate-700"
+              className="w-full text-zinc-500 text-sm hover:text-zinc-300 font-body normal-case transition-colors"
             >
               Змінити номер
             </button>
           </form>
           {retryAfter > 0 && (
-            <p className="text-slate-400 text-xs text-center mt-4">
+            <p className="text-zinc-500 text-xs text-center mt-4 font-body normal-case">
               Повторний запит через {retryAfter} сек.
             </p>
           )}
@@ -140,40 +143,24 @@ export default function LoginPage() {
 
       {step === "profile" && (
         <>
-          <h1 className="text-2xl font-bold mb-1">Ваш профіль</h1>
-          <p className="text-slate-500 text-sm mb-8">Заповніть один раз — збережемо назавжди</p>
+          <h1 className="font-heading text-2xl text-zinc-100 mb-1">Ваш профіль</h1>
+          <p className="text-zinc-400 text-sm mb-8 font-body normal-case">Заповніть один раз — збережемо назавжди</p>
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Ім'я <span className="text-red-500">*</span>
+              <label className={labelClass}>
+                Ім'я <span className="text-red-400">*</span>
               </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Іван"
-                required
-                minLength={2}
-                className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500"
-              />
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Іван" required minLength={2} className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                Email (необов'язково)
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="ivan@example.com"
-                className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500"
-              />
+              <label className={labelClass}>Email (необов'язково)</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ivan@example.com" className={inputClass} />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {error && <p className="text-red-400 text-sm">{error}</p>}
             <button
               type="submit"
               disabled={loading || !name}
-              className="w-full bg-blue-700 text-white font-semibold py-3 rounded-xl hover:bg-blue-800 disabled:opacity-50 transition-colors"
+              className="w-full bg-accent text-zinc-950 font-heading text-sm uppercase tracking-wider py-3 hover:bg-accent-hover transition-colors disabled:opacity-50"
             >
               {loading ? "Зберігаємо..." : "Зберегти та продовжити"}
             </button>

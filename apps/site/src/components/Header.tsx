@@ -1,60 +1,71 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getAccessToken } from "../lib/api";
+import { useRouter, usePathname } from "next/navigation";
+import { usePhoneAuth } from "../context/PhoneAuthModal";
+
+const NAV_LINKS = [
+  { href: "/", label: "Головна", exact: true },
+  { href: "/services/sto", label: "СТО", exact: false },
+  { href: "/services/tire", label: "Шиномонтаж", exact: false },
+  { href: "/catalog", label: "Каталог", exact: false },
+];
 
 export function Header() {
-  const [isAuth, setIsAuth] = useState(false);
+  const { phone, openPhoneModal } = usePhoneAuth();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  useEffect(() => {
-    setIsAuth(!!getAccessToken());
-    // Re-check on storage events (login/logout in another tab)
-    const handler = () => setIsAuth(!!getAccessToken());
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
-  }, []);
+  const handleProfileClick = () => {
+    if (phone) {
+      router.push("/garage");
+    } else {
+      openPhoneModal();
+    }
+  };
+
+  const isActive = (href: string, exact: boolean) =>
+    exact ? pathname === href : pathname.startsWith(href);
 
   return (
-    <header className="border-b border-slate-200 bg-white sticky top-0 z-50">
+    <header className="border-b border-zinc-800 bg-zinc-950 sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="font-bold text-xl text-blue-700 tracking-tight">
-          AutoService
+        <Link
+          href="/"
+          className="font-heading text-xl text-accent tracking-widest uppercase"
+        >
+          Автобізнесмени
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-          <Link href="/services/sto" className="hover:text-blue-700 transition-colors">
-            СТО
-          </Link>
-          <Link href="/services/tire" className="hover:text-blue-700 transition-colors">
-            Шиномонтаж
-          </Link>
-          <Link href="/catalog" className="hover:text-blue-700 transition-colors">
-            Каталог
-          </Link>
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          {NAV_LINKS.map(({ href, label, exact }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`uppercase tracking-wide text-xs transition-colors ${
+                isActive(href, exact)
+                  ? "text-accent"
+                  : "text-zinc-400 hover:text-accent"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
 
         <div className="flex items-center gap-3">
           <Link
             href="/book"
-            className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors"
+            className="bg-accent text-zinc-950 px-4 py-2 text-xs font-heading uppercase tracking-wider hover:bg-accent-hover transition-colors"
           >
             Записатись
           </Link>
-          <Link
-            href="/garage"
-            className="border border-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:border-blue-700 hover:text-blue-700 transition-colors"
+          <button
+            onClick={handleProfileClick}
+            className="border border-zinc-700 text-zinc-300 px-4 py-2 text-xs font-heading uppercase tracking-wider hover:border-accent hover:text-accent transition-colors"
           >
-            Гараж
-          </Link>
-          {isAuth && (
-            <Link
-              href="/profile"
-              className="border border-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:border-blue-700 hover:text-blue-700 transition-colors"
-            >
-              Профіль
-            </Link>
-          )}
+            {phone ? "🚗 Мій гараж" : "Увійти"}
+          </button>
         </div>
       </div>
     </header>

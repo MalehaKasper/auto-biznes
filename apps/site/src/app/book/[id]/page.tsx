@@ -23,16 +23,17 @@ const STATUS_LABEL: Record<BookingStatus, string> = {
 };
 
 const STATUS_COLOR: Record<BookingStatus, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  CONFIRMED: "bg-blue-100 text-blue-800",
-  IN_PROGRESS: "bg-orange-100 text-orange-800",
-  COMPLETED: "bg-green-100 text-green-800",
-  CANCELLED: "bg-red-100 text-red-800",
+  PENDING: "border-accent text-accent",
+  CONFIRMED: "border-blue-400 text-blue-400",
+  IN_PROGRESS: "border-accent-alt text-accent-alt",
+  COMPLETED: "border-emerald-400 text-emerald-400",
+  CANCELLED: "border-red-400 text-red-400",
 };
 
 const SERVICE_LABEL: Record<string, string> = {
   STO: "СТО — технічне обслуговування",
   TIRE: "Шиномонтаж",
+  TIRE_STORAGE: "Зберігання шин",
 };
 
 export default function BookingStatusPage() {
@@ -43,7 +44,7 @@ export default function BookingStatusPage() {
 
   useEffect(() => {
     api.bookings.getStatus(id)
-      .then(setData)
+      .then((d) => setData(d as BookingStatusData))
       .catch((err: { status?: number }) => {
         if (err.status === 404) setNotFound(true);
       })
@@ -54,8 +55,8 @@ export default function BookingStatusPage() {
     return (
       <div className="max-w-md mx-auto px-4 py-16">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-slate-100 rounded w-1/2" />
-          <div className="h-24 bg-slate-100 rounded-xl" />
+          <div className="h-6 bg-zinc-800 w-1/2" />
+          <div className="h-24 bg-zinc-800" />
         </div>
       </div>
     );
@@ -65,9 +66,11 @@ export default function BookingStatusPage() {
     return (
       <div className="max-w-md mx-auto px-4 py-16 text-center">
         <p className="text-4xl mb-4">🔍</p>
-        <h1 className="text-xl font-bold mb-2">Запис не знайдено</h1>
-        <p className="text-slate-500 text-sm mb-6">Перевірте посилання з SMS або зверніться до нас.</p>
-        <Link href="/book" className="text-blue-700 text-sm font-medium hover:underline">
+        <h1 className="font-heading text-xl text-zinc-100 mb-2">Запис не знайдено</h1>
+        <p className="text-zinc-400 text-sm font-body normal-case mb-6">
+          Перевірте посилання з SMS або зверніться до нас.
+        </p>
+        <Link href="/book" className="text-accent text-sm font-heading uppercase tracking-wider hover:text-accent-hover transition-colors">
           ← Записатись знову
         </Link>
       </div>
@@ -78,32 +81,32 @@ export default function BookingStatusPage() {
   const statusColor = STATUS_COLOR[data.status];
 
   return (
-    <div className="max-w-md mx-auto px-4 py-12">
-      <Link href="/book" className="text-slate-400 text-sm hover:text-slate-600 mb-8 inline-block">
+    <div className="max-w-md mx-auto px-4 py-12 bg-zinc-950 min-h-screen">
+      <Link href="/book" className="text-zinc-500 text-sm font-heading uppercase tracking-wide hover:text-zinc-300 transition-colors mb-8 inline-block">
         ← Нова заявка
       </Link>
 
-      <h1 className="text-2xl font-bold mb-6">Статус запису</h1>
+      <h1 className="font-heading text-2xl text-zinc-100 mb-6">Статус запису</h1>
 
-      <div className="border border-slate-200 rounded-2xl p-6 space-y-4">
+      <div className="border border-zinc-800 bg-zinc-900 p-6 space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-slate-500">Статус</span>
-          <span className={`text-sm font-semibold px-3 py-1 rounded-full ${statusColor}`}>
+          <span className="text-sm text-zinc-400 font-body normal-case">Статус</span>
+          <span className={`text-xs font-heading uppercase tracking-wider border px-3 py-1 ${statusColor}`}>
             {statusLabel}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm text-slate-500">Послуга</span>
-          <span className="text-sm font-medium text-slate-800">
+          <span className="text-sm text-zinc-400 font-body normal-case">Послуга</span>
+          <span className="text-sm text-zinc-100 font-body normal-case">
             {SERVICE_LABEL[data.serviceType] ?? data.serviceType}
           </span>
         </div>
 
         {data.scheduledAt && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500">Дата та час</span>
-            <span className="text-sm font-medium text-slate-800">
+            <span className="text-sm text-zinc-400 font-body normal-case">Дата та час</span>
+            <span className="text-sm text-zinc-100 font-body normal-case">
               {new Date(data.scheduledAt).toLocaleString("uk-UA", {
                 day: "numeric",
                 month: "long",
@@ -116,28 +119,28 @@ export default function BookingStatusPage() {
 
         {data.vehiclePlate && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-500">Номер авто</span>
-            <span className="text-sm font-mono font-medium text-slate-800">{data.vehiclePlate}</span>
+            <span className="text-sm text-zinc-400 font-body normal-case">Номер авто</span>
+            <span className="text-sm text-zinc-100 font-mono">{data.vehiclePlate}</span>
           </div>
         )}
 
-        <div className="pt-2 border-t border-slate-100">
-          <p className="text-xs text-slate-400">
-            Номер запису: <span className="font-mono">{id.slice(0, 8)}</span>
+        <div className="pt-2 border-t border-zinc-800">
+          <p className="text-xs text-zinc-600 font-body normal-case">
+            Номер запису: <span className="font-mono text-zinc-500">{id.slice(0, 8)}</span>
           </p>
         </div>
       </div>
 
       {data.status === "COMPLETED" && (
-        <div className="mt-4 bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800">
+        <div className="mt-4 border border-emerald-800 bg-emerald-950/30 p-4 text-sm text-emerald-300 font-body normal-case">
           Дякуємо! Ваш автомобіль обслуговано. Заходьте до Гаражу щоб переглянути сервісну книгу.
         </div>
       )}
 
       {data.status === "CANCELLED" && (
-        <div className="mt-4 bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800">
+        <div className="mt-4 border border-red-800 bg-red-950/30 p-4 text-sm text-red-300 font-body normal-case">
           Запис скасовано. Бажаєте{" "}
-          <Link href="/book" className="underline font-medium">записатись знову</Link>?
+          <Link href="/book" className="text-accent hover:text-accent-hover underline">записатись знову</Link>?
         </div>
       )}
     </div>

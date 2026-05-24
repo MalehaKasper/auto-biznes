@@ -22,16 +22,17 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-800",
-  CONFIRMED: "bg-blue-100 text-blue-800",
-  IN_PROGRESS: "bg-orange-100 text-orange-800",
-  COMPLETED: "bg-green-100 text-green-800",
-  CANCELLED: "bg-red-100 text-red-800",
+  PENDING: "border-accent text-accent",
+  CONFIRMED: "border-blue-400 text-blue-400",
+  IN_PROGRESS: "border-accent-alt text-accent-alt",
+  COMPLETED: "border-emerald-400 text-emerald-400",
+  CANCELLED: "border-red-400 text-red-400",
 };
 
 const SERVICE_LABEL: Record<string, string> = {
   STO: "СТО",
   TIRE: "Шиномонтаж",
+  TIRE_STORAGE: "Зберігання шин",
 };
 
 function formatDate(iso: string | null) {
@@ -43,6 +44,9 @@ function formatDate(iso: string | null) {
     minute: "2-digit",
   });
 }
+
+const inputClass = "w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 px-4 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors";
+const labelClass = "block text-sm text-zinc-400 mb-1 font-body normal-case";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -94,8 +98,8 @@ export default function ProfilePage() {
     return (
       <div className="max-w-xl mx-auto px-4 py-12">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-slate-100 rounded w-1/3" />
-          <div className="h-40 bg-slate-100 rounded-2xl" />
+          <div className="h-8 bg-zinc-800 w-1/3" />
+          <div className="h-40 bg-zinc-800" />
         </div>
       </div>
     );
@@ -105,59 +109,45 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-12">
-      <h1 className="text-2xl font-bold mb-8">Мій профіль</h1>
+      <h1 className="font-heading text-2xl text-zinc-100 mb-8">Мій профіль</h1>
 
-      {/* Profile form */}
-      <div className="border border-slate-200 rounded-2xl p-6 mb-8">
+      <div className="border border-zinc-800 bg-zinc-900 p-6 mb-8">
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Телефон</label>
-            <p className="text-slate-900 font-mono text-sm px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200">
+            <label className={labelClass}>Телефон</label>
+            <p className="text-zinc-100 font-mono text-sm px-4 py-2.5 bg-zinc-800 border border-zinc-700">
               {profile.phone}
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Ім'я</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Ваше ім'я"
-              className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-            />
+            <label className={labelClass}>Ім'я</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ваше ім'я" className={inputClass} />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@mail.com"
-              className="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500"
-            />
+            <label className={labelClass}>Email</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="example@mail.com" className={inputClass} />
           </div>
 
-          {saveError && <p className="text-red-500 text-sm">{saveError}</p>}
-          {saved && <p className="text-green-600 text-sm">Збережено</p>}
+          {saveError && <p className="text-red-400 text-sm">{saveError}</p>}
+          {saved && <p className="text-emerald-400 text-sm">Збережено</p>}
 
           <button
             type="submit"
             disabled={saving}
-            className="bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-800 disabled:opacity-50 transition-colors text-sm"
+            className="bg-accent text-zinc-950 font-heading text-xs uppercase tracking-wider px-6 py-2.5 hover:bg-accent-hover transition-colors disabled:opacity-50"
           >
             {saving ? "Збереження..." : "Зберегти"}
           </button>
         </form>
       </div>
 
-      {/* Bookings history */}
-      <h2 className="text-lg font-semibold mb-4">Мої записи</h2>
+      <h2 className="font-heading text-lg text-zinc-100 mb-4">Мої записи</h2>
       {profile.bookings.length === 0 ? (
-        <div className="border border-dashed border-slate-200 rounded-2xl py-10 text-center text-slate-400 text-sm">
+        <div className="border border-dashed border-zinc-700 py-10 text-center text-zinc-500 text-sm font-body normal-case">
           <p>У вас ще немає записів</p>
-          <Link href="/book" className="text-blue-700 font-medium mt-2 inline-block hover:underline">
+          <Link href="/book" className="text-accent font-heading text-xs uppercase tracking-wider mt-2 inline-block hover:text-accent-hover transition-colors">
             Записатись на сервіс →
           </Link>
         </div>
@@ -167,16 +157,16 @@ export default function ProfilePage() {
             <Link
               key={b.id}
               href={`/book/${b.id}`}
-              className="block border border-slate-200 rounded-xl p-4 hover:border-blue-300 transition-colors"
+              className="block border border-zinc-800 bg-zinc-900 p-4 hover:border-zinc-600 transition-colors"
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="font-medium text-slate-800">{SERVICE_LABEL[b.serviceType] ?? b.serviceType}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="font-heading text-zinc-100 text-sm">{SERVICE_LABEL[b.serviceType] ?? b.serviceType}</p>
+                  <p className="text-xs text-zinc-400 mt-0.5 font-body normal-case">
                     {b.scheduledAt ? formatDate(b.scheduledAt) : `Заявка від ${formatDate(b.createdAt)}`}
                   </p>
                 </div>
-                <span className={`shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_COLOR[b.status] ?? "bg-slate-100 text-slate-600"}`}>
+                <span className={`shrink-0 text-xs border px-2.5 py-1 font-heading uppercase tracking-wide whitespace-nowrap ${STATUS_COLOR[b.status] ?? "border-zinc-600 text-zinc-400"}`}>
                   {STATUS_LABEL[b.status] ?? b.status}
                 </span>
               </div>

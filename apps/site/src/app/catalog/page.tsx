@@ -24,9 +24,9 @@ function ListingCard({ listing }: { listing: CatalogListing }) {
   return (
     <Link
       href={`/catalog/${listing.id}`}
-      className="block bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md transition-shadow"
+      className="block bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-zinc-600 transition-colors"
     >
-      <div className="relative h-48 bg-slate-100">
+      <div className="relative h-48 bg-zinc-800">
         {photo ? (
           <img
             src={photo}
@@ -34,23 +34,23 @@ function ListingCard({ listing }: { listing: CatalogListing }) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
+          <div className="w-full h-full flex items-center justify-center text-zinc-500 text-sm font-body normal-case">
             Фото відсутнє
           </div>
         )}
         {isUnavailable && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <span className="bg-white text-slate-800 px-3 py-1 rounded-full text-sm font-medium">
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <span className="border border-zinc-700 text-zinc-300 px-3 py-1 text-xs font-heading uppercase tracking-wide">
               {statusLabel[listing.status] ?? listing.status}
             </span>
           </div>
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-slate-900">
+        <h3 className="font-heading text-zinc-100">
           {listing.make} {listing.model}
         </h3>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-zinc-400 mt-1 font-body normal-case">
           {listing.type === "WANTED"
             ? `${listing.year}–${listing.yearMax ?? "..."} р.`
             : `${listing.year} р.`}
@@ -60,12 +60,12 @@ function ListingCard({ listing }: { listing: CatalogListing }) {
             ` · до ${listing.mileageMax.toLocaleString()} км`}
         </p>
         {listing.price != null && (
-          <p className="mt-2 font-bold text-blue-700">
+          <p className="mt-2 font-heading text-accent text-lg">
             {listing.type === "WANTED" ? "до " : ""}
             {Number(listing.price).toLocaleString("uk-UA")} грн
           </p>
         )}
-        <span className="mt-3 inline-block text-sm text-blue-700 font-medium hover:underline">
+        <span className="mt-3 inline-block text-xs text-zinc-400 font-heading uppercase tracking-wider hover:text-accent transition-colors">
           Детальніше →
         </span>
       </div>
@@ -75,7 +75,7 @@ function ListingCard({ listing }: { listing: CatalogListing }) {
 
 function EmptyState({ tab }: { tab: TabType }) {
   return (
-    <div className="col-span-full text-center py-16 text-slate-500">
+    <div className="col-span-full text-center py-16 text-zinc-500 font-body normal-case">
       {tab === "sale"
         ? "Авто за вашими фільтрами не знайдено."
         : "Наразі немає активних запитів на викуп. Скористайтесь формою нижче."}
@@ -90,6 +90,9 @@ interface Filters {
   yearMin: string;
   yearMax: string;
 }
+
+const inputClass = "w-full bg-zinc-900 border border-zinc-700 text-zinc-100 placeholder-zinc-500 px-3 py-2 text-sm focus:outline-none focus:border-accent transition-colors";
+const labelClass = "block text-xs text-zinc-400 mb-1 font-body normal-case";
 
 function CatalogPageInner() {
   const searchParams = useSearchParams();
@@ -168,7 +171,6 @@ function CatalogPageInner() {
     setFilters(newFilters);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    // Only debounce text input (make); numeric inputs update immediately on blur
     if (key === "make") {
       debounceRef.current = setTimeout(() => {
         setAppliedFilters(newFilters);
@@ -204,29 +206,29 @@ function CatalogPageInner() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-slate-900 mb-2">Каталог авто</h1>
-      <p className="text-slate-500 mb-8">
+      <h1 className="font-heading text-3xl text-zinc-100 mb-2">Каталог авто</h1>
+      <p className="text-zinc-400 mb-8 font-body normal-case">
         Авто на продаж та автомобілі, які ми шукаємо для викупу
       </p>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-slate-200">
+      <div className="flex gap-0 mb-6 border-b border-zinc-800">
         <button
           onClick={() => handleTabChange("sale")}
-          className={`px-5 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+          className={`px-5 py-2.5 text-xs font-heading uppercase tracking-wider border-b-2 -mb-px transition-colors ${
             tab === "sale"
-              ? "border-blue-700 text-blue-700"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              ? "border-accent text-accent"
+              : "border-transparent text-zinc-500 hover:text-zinc-100"
           }`}
         >
           Продаж
         </button>
         <button
           onClick={() => handleTabChange("wanted")}
-          className={`px-5 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+          className={`px-5 py-2.5 text-xs font-heading uppercase tracking-wider border-b-2 -mb-px transition-colors ${
             tab === "wanted"
-              ? "border-blue-700 text-blue-700"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              ? "border-accent text-accent"
+              : "border-transparent text-zinc-500 hover:text-zinc-100"
           }`}
         >
           Викуп
@@ -235,20 +237,20 @@ function CatalogPageInner() {
 
       {/* Filter panel */}
       {tab === "sale" && (
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+        <div className="bg-zinc-800 border border-zinc-700 p-4 mb-6">
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 items-end">
             <div className="col-span-2 sm:col-span-1">
-              <label className="block text-xs text-slate-500 mb-1">Марка</label>
+              <label className={labelClass}>Марка</label>
               <input
                 type="text"
                 value={filters.make}
                 onChange={(e) => handleFilterChange("make", e.target.value)}
                 placeholder="Toyota..."
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Ціна від</label>
+              <label className={labelClass}>Ціна від</label>
               <input
                 type="number"
                 value={filters.priceMin}
@@ -256,11 +258,11 @@ function CatalogPageInner() {
                 onBlur={handleNumericBlur}
                 placeholder="0"
                 min={0}
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Ціна до</label>
+              <label className={labelClass}>Ціна до</label>
               <input
                 type="number"
                 value={filters.priceMax}
@@ -268,11 +270,11 @@ function CatalogPageInner() {
                 onBlur={handleNumericBlur}
                 placeholder="∞"
                 min={0}
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Рік від</label>
+              <label className={labelClass}>Рік від</label>
               <input
                 type="number"
                 value={filters.yearMin}
@@ -281,11 +283,11 @@ function CatalogPageInner() {
                 placeholder="1990"
                 min={1900}
                 max={2100}
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Рік до</label>
+              <label className={labelClass}>Рік до</label>
               <input
                 type="number"
                 value={filters.yearMax}
@@ -294,14 +296,14 @@ function CatalogPageInner() {
                 placeholder="2025"
                 min={1900}
                 max={2100}
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                className={inputClass}
               />
             </div>
           </div>
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="mt-3 text-xs text-slate-500 hover:text-slate-700 underline"
+              className="mt-3 text-xs text-zinc-500 hover:text-zinc-300 underline font-body normal-case"
             >
               Скинути фільтри
             </button>
@@ -311,7 +313,7 @@ function CatalogPageInner() {
 
       {/* Wanted tab description */}
       {tab === "wanted" && !loading && listings.length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-sm text-blue-800">
+        <div className="border border-zinc-700 bg-zinc-800 p-4 mb-6 text-sm text-zinc-300 font-body normal-case">
           Нижче — авто, які ми активно шукаємо для купівлі. Якщо у вас є
           подібний автомобіль — натисніть "Є таке авто" і ми зв'яжемось з вами.
         </div>
@@ -321,7 +323,7 @@ function CatalogPageInner() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="bg-slate-100 rounded-xl h-64 animate-pulse" />
+            <div key={i} className="bg-zinc-800 h-64 animate-pulse" />
           ))}
         </div>
       ) : (
@@ -339,7 +341,7 @@ function CatalogPageInner() {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-8 py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
+                className="border border-zinc-700 text-zinc-300 font-heading text-xs uppercase tracking-wider px-8 py-3 hover:border-accent hover:text-accent transition-colors disabled:opacity-50"
               >
                 {loadingMore ? "Завантаження..." : "Завантажити ще"}
               </button>
@@ -350,16 +352,16 @@ function CatalogPageInner() {
 
       {/* Buyout evaluation form link */}
       {tab === "wanted" && !loading && (
-        <div className="mt-12 bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
-          <h2 className="text-lg font-semibold text-slate-900 mb-2">
+        <div className="mt-12 border border-zinc-800 bg-zinc-900 p-6 text-center">
+          <h2 className="font-heading text-lg text-zinc-100 mb-2">
             Хочете продати своє авто?
           </h2>
-          <p className="text-slate-500 text-sm mb-4">
+          <p className="text-zinc-400 text-sm mb-4 font-body normal-case">
             Залиште заявку — ми зв'яжемось і зробимо безкоштовну оцінку
           </p>
           <Link
             href="/catalog/evaluate"
-            className="inline-block bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors"
+            className="inline-block bg-accent text-zinc-950 font-heading text-sm uppercase tracking-wider px-6 py-2.5 hover:bg-accent-hover transition-colors"
           >
             Оцінити своє авто
           </Link>

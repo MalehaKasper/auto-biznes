@@ -40,13 +40,24 @@
 - **WHEN** користувач змінює `plate` авто через `PATCH /garage/vehicles/:vehicleId`
 - **THEN** система оновлює `Vehicle.plate`, повертає оновлений об'єкт
 
+### Requirement: Unauthenticated access to Garage triggers phone modal
+When an unauthenticated user attempts to access `/garage`, the site SHALL NOT redirect to a separate `/login` page. Instead, it SHALL open the phone auth modal inline. After successful phone submission the user is taken to `/garage`.
+
+#### Scenario: Guest clicks garage link
+- **WHEN** a guest user navigates to `/garage` or clicks any garage-access link
+- **THEN** the phone auth modal opens on the current page instead of redirecting to `/login`
+
+#### Scenario: Auth completed via modal — garage loads
+- **WHEN** the user completes phone auth via the modal triggered from a garage access attempt
+- **THEN** the modal closes and the garage page loads with the user's vehicles
+
 ### Requirement: Book service for specific vehicle from Garage
 The site SHALL allow authenticated users to start a booking pre-filled with a specific vehicle's details from the Garage vehicle detail page.
 
 #### Scenario: Book from vehicle detail
 - **WHEN** an authenticated user clicks "Записати на сервіс" on a vehicle detail page
-- **THEN** the user is navigated to `/book?vehicleId={id}` with the booking form pre-populated with vehicle make, model, year, and plate
+- **THEN** the booking widget opens at step 2 (vehicle) pre-populated with the vehicle's make, model, year, and plate (step 1 is skipped since user is authenticated)
 
-#### Scenario: Pre-filled vehicle data in booking form
-- **WHEN** the booking form is loaded with `vehicleId` query param
-- **THEN** the vehicle fields (make, model, year, plate) are pre-filled and the vehicle section shows "Дані авто підставлено з Гаражу"
+#### Scenario: Pre-filled vehicle data in booking widget
+- **WHEN** the booking widget is opened with a `vehicleId` context
+- **THEN** step 2 shows the pre-filled vehicle as selected and the user proceeds directly to step 3

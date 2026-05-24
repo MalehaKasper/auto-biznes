@@ -174,6 +174,14 @@ export const api = {
       }),
   },
 
+  identity: {
+    lookupOrCreate: (phone: string) =>
+      request<{ userId: string; isNew: boolean; sessionToken: string }>(
+        "/identity/lookup-or-create",
+        { method: "POST", body: JSON.stringify({ phone }) }
+      ),
+  },
+
   garage: {
     getVehicles: (archived = false) =>
       request<unknown[]>(`/garage/vehicles${archived ? "?archived=true" : ""}`),

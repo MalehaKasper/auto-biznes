@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 
+const inputClass = "w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 px-3 py-2 text-sm focus:outline-none focus:border-accent transition-colors";
+const labelClass = "block text-sm text-zinc-400 mb-1 font-body normal-case";
+const labelSmClass = "block text-xs text-zinc-400 mb-1 font-body normal-case";
+
 export default function EvaluatePage() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -59,16 +63,14 @@ export default function EvaluatePage() {
   if (success) {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <div className="text-5xl mb-4">✓</div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">
-          Заявку отримано!
-        </h2>
-        <p className="text-slate-500 mb-8">
+        <div className="text-accent text-5xl mb-4">✓</div>
+        <h2 className="font-heading text-2xl text-zinc-100 mb-2">Заявку отримано!</h2>
+        <p className="text-zinc-400 mb-8 font-body normal-case">
           Ми зв'яжемось з вами для уточнення деталей та призначення безкоштовної оцінки.
         </p>
         <button
           onClick={() => router.push("/catalog")}
-          className="bg-blue-700 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-800"
+          className="bg-accent text-zinc-950 font-heading text-sm uppercase tracking-wider px-6 py-3 hover:bg-accent-hover transition-colors"
         >
           Повернутись до каталогу
         </button>
@@ -80,127 +82,70 @@ export default function EvaluatePage() {
     <div className="max-w-lg mx-auto px-4 py-10">
       <button
         onClick={() => router.push("/catalog?tab=wanted")}
-        className="text-sm text-slate-500 hover:text-slate-800 mb-6 inline-block"
+        className="text-sm text-zinc-500 hover:text-zinc-200 mb-6 inline-block font-heading uppercase tracking-wide transition-colors"
       >
         ← Назад
       </button>
-      <h1 className="text-2xl font-bold text-slate-900 mb-2">
-        Оцінити своє авто
-      </h1>
-      <p className="text-slate-500 text-sm mb-8">
+      <h1 className="font-heading text-2xl text-zinc-100 mb-2">Оцінити своє авто</h1>
+      <p className="text-zinc-400 text-sm mb-8 font-body normal-case">
         Залиште заявку — ми зв'яжемось і зробимо безкоштовну оцінку вашого автомобіля.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Телефон *
-            </label>
-            <input
-              type="tel"
-              placeholder="+380XXXXXXXXX"
-              value={form.phone}
-              onChange={set("phone")}
-              required
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-            />
+            <label className={labelClass}>Телефон *</label>
+            <input type="tel" placeholder="+380XXXXXXXXX" value={form.phone} onChange={set("phone")} required className={inputClass} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Ім'я *
-            </label>
-            <input
-              type="text"
-              placeholder="Ваше ім'я"
-              value={form.name}
-              onChange={set("name")}
-              required
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-            />
+            <label className={labelClass}>Ім'я *</label>
+            <input type="text" placeholder="Ваше ім'я" value={form.name} onChange={set("name")} required className={inputClass} />
           </div>
         </div>
 
-        <div className="border border-slate-200 rounded-lg p-4 space-y-3">
-          <p className="text-sm font-medium text-slate-700">Ваше авто</p>
+        <div className="border border-zinc-700 bg-zinc-800 p-4 space-y-3">
+          <p className="text-sm text-zinc-300 font-body normal-case">Ваше авто</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Марка *</label>
-              <input
-                type="text"
-                placeholder="Toyota"
-                value={form.tradeVehicleMake}
-                onChange={set("tradeVehicleMake")}
-                required
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-              />
+              <label className={labelSmClass}>Марка *</label>
+              <input type="text" placeholder="Toyota" value={form.tradeVehicleMake} onChange={set("tradeVehicleMake")} required className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Модель *</label>
-              <input
-                type="text"
-                placeholder="Camry"
-                value={form.tradeVehicleModel}
-                onChange={set("tradeVehicleModel")}
-                required
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-              />
+              <label className={labelSmClass}>Модель *</label>
+              <input type="text" placeholder="Camry" value={form.tradeVehicleModel} onChange={set("tradeVehicleModel")} required className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Рік випуску</label>
-              <input
-                type="number"
-                placeholder="2019"
-                value={form.tradeVehicleYear}
-                onChange={set("tradeVehicleYear")}
-                min={1900}
-                max={2100}
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-              />
+              <label className={labelSmClass}>Рік випуску</label>
+              <input type="number" placeholder="2019" value={form.tradeVehicleYear} onChange={set("tradeVehicleYear")} min={1900} max={2100} className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1">Пробіг (км)</label>
-              <input
-                type="number"
-                placeholder="85000"
-                value={form.tradeVehicleMileage}
-                onChange={set("tradeVehicleMileage")}
-                min={0}
-                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-              />
+              <label className={labelSmClass}>Пробіг (км)</label>
+              <input type="number" placeholder="85000" value={form.tradeVehicleMileage} onChange={set("tradeVehicleMileage")} min={0} className={inputClass} />
             </div>
           </div>
           <div>
-            <label className="block text-xs text-slate-500 mb-1">Держномер</label>
-            <input
-              type="text"
-              placeholder="AA1234BB"
-              value={form.tradeVehiclePlate}
-              onChange={set("tradeVehiclePlate")}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
-            />
+            <label className={labelSmClass}>Держномер</label>
+            <input type="text" placeholder="AA1234BB" value={form.tradeVehiclePlate} onChange={set("tradeVehiclePlate")} className={inputClass} />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">
-            Додатковий коментар
-          </label>
+          <label className={labelClass}>Додатковий коментар</label>
           <textarea
             placeholder="Стан авто, особливості, побажання..."
             value={form.message}
             onChange={set("message")}
             rows={3}
-            className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 resize-none"
+            className={`${inputClass} resize-none`}
           />
         </div>
 
-        {error && <p className="text-red-600 text-sm">{error}</p>}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-700 text-white py-3 rounded-xl font-medium hover:bg-blue-800 transition-colors disabled:opacity-50"
+          className="w-full bg-accent text-zinc-950 font-heading text-sm uppercase tracking-wider py-3 hover:bg-accent-hover transition-colors disabled:opacity-50"
         >
           {loading ? "Надсилання..." : "Надіслати заявку"}
         </button>

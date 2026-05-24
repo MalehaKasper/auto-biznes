@@ -1,72 +1,72 @@
 import Link from "next/link";
-
-const services = [
-  {
-    href: "/services/sto",
-    title: "СТО",
-    description: "Технічне обслуговування, ремонт двигуна, ходової, гальм та електрики",
-    icon: "🔧",
-  },
-  {
-    href: "/services/tire",
-    title: "Шиномонтаж",
-    description: "Сезонне перевзування, балансування, ремонт та зберігання шин",
-    icon: "🛞",
-  },
-];
+import { CatalogSlider } from "../components/CatalogSlider";
 
 export default function HomePage() {
   return (
     <>
-      <section className="bg-gradient-to-b from-blue-700 to-blue-900 text-white py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-            Ваш автомобіль в надійних руках
-          </h1>
-          <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-            Запис на СТО та шиномонтаж без реєстрації. Вся сервісна книга зберігається у вашому Гаражі.
+      {/* Hero */}
+      <section
+        className="noise relative min-h-screen flex flex-col items-center justify-center px-4 text-center"
+        style={{
+          background: "linear-gradient(160deg, #09090b 0%, #18181b 50%, #1c1917 100%)",
+        }}
+      >
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <p className="text-accent text-xs font-heading tracking-[0.3em] uppercase mb-4">
+            Автобізнесмени
           </p>
-          <Link
-            href="/book"
-            className="inline-block bg-white text-blue-800 font-semibold px-8 py-3 rounded-xl text-lg hover:bg-blue-50 transition-colors"
-          >
-            Записатись онлайн
-          </Link>
-        </div>
-      </section>
+          <h1 className="text-5xl md:text-7xl font-heading text-zinc-100 mb-6 leading-none">
+            Твоя тачка<br />
+            <span className="text-accent">в надійних</span><br />
+            руках
+          </h1>
+          <p className="text-zinc-400 text-base md:text-lg mb-12 max-w-xl mx-auto normal-case tracking-normal font-body">
+            Запис на сервіс без реєстрації. Вся сервісна книга у вашому Гаражі.
+          </p>
 
-      <section className="max-w-4xl mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-center mb-10 text-slate-800">
-          Наші послуги
-        </h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          {services.map((s) => (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              key={s.href}
-              href={s.href}
-              className="border border-slate-200 rounded-2xl p-6 hover:border-blue-400 hover:shadow-md transition-all group"
+              href="/book?service=sto"
+              className="group relative border-2 border-accent bg-accent text-zinc-950 font-heading text-sm uppercase tracking-widest px-8 py-4 hover:bg-transparent hover:text-accent transition-all duration-200"
             >
-              <div className="text-4xl mb-3">{s.icon}</div>
-              <h3 className="text-xl font-semibold mb-2 group-hover:text-blue-700 transition-colors">
-                {s.title}
-              </h3>
-              <p className="text-slate-500 text-sm">{s.description}</p>
+              Заїхати на СТО
             </Link>
-          ))}
+            <Link
+              href="/book?service=tire"
+              className="border-2 border-zinc-600 text-zinc-300 font-heading text-sm uppercase tracking-widest px-8 py-4 hover:border-accent hover:text-accent transition-all duration-200"
+            >
+              Шиномонтаж
+            </Link>
+            <Link
+              href="/catalog"
+              className="border-2 border-zinc-600 text-zinc-300 font-heading text-sm uppercase tracking-widest px-8 py-4 hover:border-accent-alt hover:text-accent-alt transition-all duration-200"
+            >
+              Купити / Продати авто
+            </Link>
+          </div>
         </div>
+
+        {/* Decorative bottom gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, transparent, #09090b)" }}
+        />
       </section>
 
-      <section className="bg-slate-50 py-16 px-4">
+      {/* Catalog Slider */}
+      <CatalogSlider />
+
+      {/* Garage section */}
+      <section className="py-20 px-4 border-t border-zinc-800">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-4 text-slate-800">
+          <h2 className="font-heading text-3xl md:text-4xl text-zinc-100 mb-4">
             Особистий Гараж
           </h2>
-          <p className="text-slate-500 mb-6 max-w-xl mx-auto">
-            Всі ваші авто та їх сервісна книга — в одному місці. Доступно після входу за номером телефону.
+          <p className="text-zinc-400 mb-8 max-w-xl mx-auto normal-case tracking-normal font-body">
+            Всі ваші авто та сервісна книга — в одному місці. Доступно після входу за номером телефону.
           </p>
           <Link
             href="/garage"
-            className="inline-block border-2 border-blue-700 text-blue-700 font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-700 hover:text-white transition-colors"
+            className="inline-block border-2 border-zinc-600 text-zinc-300 font-heading text-sm uppercase tracking-widest px-8 py-4 hover:border-accent hover:text-accent transition-all duration-200"
           >
             Відкрити Гараж
           </Link>
